@@ -51,4 +51,19 @@ describe "Sequel::Plugins::Translatable" do
     m.value_en.should == "Objects"
     m.value_hash.should == {en: "Objects", fr: "Objets"}
   end
+  it "allows validating at least one language is required" do
+    @klass.plugin :translatable, :value
+    @klass.send :define_method, :validate do
+      super()
+      validates_at_least_one_language :value
+    end
+    m = @klass.new
+    m.should_not be_valid
+    m.errors.should == {
+      value_en: ["at least one language is required"],
+      value_fr: ["at least one language is required"],
+    }
+    m.value = "Objects"
+    m.should be_valid
+  end
 end

@@ -13,12 +13,12 @@ module Sequel
               send "#{attribute}_\#{base_locale}"
             end
             def #{attribute}_hash
-              @#{attribute}_columns ||= columns.collect do |column|
+              @#{attribute}_locales ||= columns.collect do |column|
                 $1 if column=~/\\A#{Regexp.escape attribute}_(.+)\\z/
               end.compact.sort.collect(&:to_sym)
               hash = {}
-              @#{attribute}_columns.each do |column|
-                hash[column] = send "#{attribute}_\#{column}"
+              @#{attribute}_locales.each do |locale|
+                hash[locale] = send "#{attribute}_\#{locale}"
               end
               hash
             end
@@ -30,6 +30,12 @@ module Sequel
       module DatasetMethods
       end
       module InstanceMethods
+        def validates_at_least_one_language(attribute)
+          hash = send "#{attribute}_hash"
+          hash.keys.each do |locale|
+            errors.add :"#{attribute}_#{locale}", "at least one language is required"
+          end if hash.values.all?{|value| value.to_s.strip.empty?}
+        end
       private
         def base_locale
           I18n.locale.to_s[0..1]

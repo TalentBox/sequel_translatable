@@ -44,7 +44,7 @@ Usage
         m.value
         -> "Item"
         m.value = "Object"
-        m.all_values
+        m.value_hash
         -> {en: "Object", fr: "Objet"}
 
 * You can ask the model class for the supported locales:

@@ -66,4 +66,12 @@ describe "Sequel::Plugins::Translatable" do
     m.value = "Objects"
     m.should be_valid
   end
+  it "exposes the locales for an attribute" do
+    @klass.locales_for("value").should == [:en, :fr]
+    @klass.locales_for(:value).should == [:en, :fr]
+  end
+  it "exposes the translated attributes for an attribute" do
+    @klass.translated_attributes_for("value").should == [:value_en, :value_fr]
+    @klass.translated_attributes_for(:value).should == [:value_en, :value_fr]
+  end
 end

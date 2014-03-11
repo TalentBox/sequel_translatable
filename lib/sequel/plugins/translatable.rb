@@ -13,19 +13,26 @@ module Sequel
               send "#{attribute}_\#{base_locale}"
             end
             def #{attribute}_hash
-              @#{attribute}_locales ||= columns.collect do |column|
-                $1 if column=~/\\A#{Regexp.escape attribute}_(.+)\\z/
-              end.compact.sort.collect(&:to_sym)
-              hash = {}
-              @#{attribute}_locales.each do |locale|
-                hash[locale] = send "#{attribute}_\#{locale}"
+              self.class.locales_for("#{attribute}").each_with_object({}) do |locale, accu|
+                accu[locale] = send "#{attribute}_\#{locale}"
               end
-              hash
             end
           EOS
         end
       end
       module ClassMethods
+        def locales_for(attribute)
+          @attribute_locales ||= {}
+          @attribute_locales[attribute.to_sym] ||= columns.map do |column|
+            $1 if column=~/\A#{Regexp.escape attribute}_(.+)\z/
+          end.compact.sort.map(&:to_sym)
+        end
+        def translated_attributes_for(attribute)
+          @translated_attributes ||= {}
+          @translated_attributes[attribute.to_sym] ||= locales_for(attribute).map do |locale|
+            "#{attribute}_#{locale}".to_sym
+          end
+        end
       end
       module DatasetMethods
       end

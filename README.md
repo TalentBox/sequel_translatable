@@ -13,6 +13,11 @@ Dependencies
 Usage
 -----
 
+* Assume a model with columns like this:
+
+        MyModel.columns
+        -> [:value_en, :value_fr, :name_nl]
+
 * Declare translatable attribute inside your model:
 
         class MyModel < Sequel::Model
@@ -39,8 +44,22 @@ Usage
         m.value
         -> "Item"
         m.value = "Object"
-        m.all_values
+        m.value_hash
         -> {en: "Object", fr: "Objet"}
+
+* You can ask the model class for the supported locales:
+
+        MyModel.locales_for(:value)
+        -> [:en, :fr]
+        MyModel.locales_for(:name)
+        -> [:nl]
+
+* You can also ask the model class for the translated attributes:
+
+        MyModel.translated_attributes_for(:value)
+        -> [:value_en, :value_fr]
+        MyModel.translated_attributes_for(:name)
+        -> [:name_nl]
 
 Build Status
 ------------

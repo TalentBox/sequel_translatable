@@ -3,9 +3,9 @@ $:.push File.expand_path("../lib", __FILE__)
 
 Gem::Specification.new do |s|
   s.name        = "sequel_translatable"
-  s.version     = "0.2.0"
-  s.authors     = ["Joseph HALTER"]
-  s.email       = ["joseph.halter@thetalentbox.com"]
+  s.version     = "0.3.0"
+  s.authors     = ["Joseph HALTER", "Koen De Hondt", "Jonathan Tron"]
+  s.email       = ["joseph.halter@thetalentbox.com", "koen@audacis.be", "jonathan@tron.name"]
   s.homepage    = "https://github.com/TalentBox/sequel_translatable"
   s.summary     = "Translate model attributes for sequel."
   s.description = "Translate model attributes for sequel, fully tested."

@@ -15,41 +15,43 @@ describe "Sequel::Plugins::Translatable" do
   end
   after{ @klass.truncate }
   it "checks at least one attribute is given" do
-    lambda{
+    expect do
       @klass.plugin :translatable
-    }.should raise_error Sequel::Error, "please specify attributes to use for translatable plugin"
+    end.to raise_error Sequel::Error, "please specify attributes to use for translatable plugin"
   end
   it "checks value isn't defined before plugin" do
-    @klass.new.should_not respond_to :value
+    expect( @klass.new ).not_to respond_to :value
   end
   it "allows defining a single attribute" do
     @klass.plugin :translatable, :value
-    @klass.new.should respond_to :value
+    expect( @klass.new ).to respond_to :value
   end
   it "allows defining multiple attributes" do
     @klass.plugin :translatable, [:name, :value]
-    @klass.new.should respond_to :name
-    @klass.new.should respond_to :value
+    expect( @klass.new ).to respond_to :name
+    expect( @klass.new ).to respond_to :value
   end
   it "gets value from current locale" do
     I18n.locale = :en
     @klass.plugin :translatable, :value
     m = @klass.new value_en: "Items", value_fr: "Objets"
-    m.value.should == "Items"
+    expect( m.value ).to eq "Items"
     I18n.locale = :fr
-    m.value.should == "Objets"
+    expect( m.value ).to eq "Objets"
     I18n.locale = :en_master
-    m.value.should == "Items"
+    expect( m.value ).to eq "Items"
     I18n.locale = :nl
-    lambda{ m.value }.should raise_error NoMethodError
+    expect do
+      m.value
+    end.to raise_error NoMethodError
   end
   it "sets value from current locale" do
     I18n.locale = :en
     @klass.plugin :translatable, :value
     m = @klass.new value_en: "Items", value_fr: "Objets"
     m.value = "Objects"
-    m.value_en.should == "Objects"
-    m.value_hash.should == {en: "Objects", fr: "Objets"}
+    expect( m.value_en ).to eq "Objects"
+    expect( m.value_hash ).to eq({en: "Objects", fr: "Objets"})
   end
   it "allows validating at least one language is required" do
     @klass.plugin :translatable, :value
@@ -58,20 +60,20 @@ describe "Sequel::Plugins::Translatable" do
       validates_at_least_one_language :value
     end
     m = @klass.new
-    m.should_not be_valid
-    m.errors.should == {
+    expect( m.valid? ).to be false
+    expect( m.errors ).to eq({
       value_en: ["at least one language is required"],
       value_fr: ["at least one language is required"],
-    }
+    })
     m.value = "Objects"
-    m.should be_valid
+    expect( m.valid? ).to be true
   end
   it "exposes the locales for an attribute" do
-    @klass.locales_for("value").should == [:en, :fr]
-    @klass.locales_for(:value).should == [:en, :fr]
+    expect( @klass.locales_for("value") ).to eq [:en, :fr]
+    expect( @klass.locales_for(:value) ).to eq [:en, :fr]
   end
   it "exposes the translated attributes for an attribute" do
-    @klass.translated_attributes_for("value").should == [:value_en, :value_fr]
-    @klass.translated_attributes_for(:value).should == [:value_en, :value_fr]
+    expect( @klass.translated_attributes_for("value") ).to eq [:value_en, :value_fr]
+    expect( @klass.translated_attributes_for(:value) ).to eq [:value_en, :value_fr]
   end
 end

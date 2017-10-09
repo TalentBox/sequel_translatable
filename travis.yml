@@ -1,0 +1,15 @@
+language: ruby
+cache:
+  bundler: true
+sudo: false
+rvm:
+  - 2.2.7
+  - 2.3.4
+  - 2.4.2
+  - jruby-9.1.13.0
+env:
+  - SEQUEL='~> 3.0'
+  - SEQUEL='~> 4.0'
+  - SEQUEL='~> 5.0'
+gemfile:
+  - ci/sequel.gemfile
